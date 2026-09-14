@@ -292,8 +292,9 @@ How much of your signature is reproducible signal rather than noise? With two or
 more replicates on each side, the run answers that with a **split-half**
 estimate: it splits your replicates into two halves, computes an independent
 contrast from each, and correlates the two. Agreement means signal; disagreement
-means you are looking at noise. The halves are kept **disjoint** and every
-possible pairing is averaged:
+means you are looking at noise. The halves are kept **disjoint**, and every possible 
+pairing is averaged when there are ten or fewer replicates per group; above that, a 
+uniform random sample of 5,000 pairings is used instead.
 
 ```text
 replicate reliability: single contrast rho = +0.31 (mean over 2 disjoint pairings)

@@ -38,6 +38,7 @@ import json
 import logging
 from collections.abc import Mapping
 from pathlib import Path
+from itertools import combinations, permutations
 
 import numpy as np
 
@@ -147,35 +148,57 @@ def spearman(a: np.ndarray, b: np.ndarray) -> float:
     return float((ra * rb).sum() / denom) if denom > 0 else float("nan")
 
 
-def split_half_reliability(T: np.ndarray, C: np.ndarray) -> dict | None:
+def split_half_reliability(T: np.ndarray, C: np.ndarray,
+                           max_pairings: int = 5000,
+                           seed: int = 0) -> dict | None:
     """Reliability of ONE contrast, from disjoint treated/control pairings.
 
     `T` and `C` are (n_replicates, n_genes) in log space.
 
-    Each sample is used at most once per pairing, so the two halves share no
-    term. Returns None when there are fewer than two replicates a side.
+    A pairing is two contrasts (T[ti] - C[ci], T[tj] - C[cj]) with
+    ti != tj and ci != cj, so the two halves share no sample. All
+    k^2 (k-1)^2 / 2 such pairings are averaged when that count fits
+    within `max_pairings`; otherwise a uniform random sample of
+    `max_pairings` distinct pairings is used. Returns None when there
+    are fewer than two replicates a side.
 
     `single_contrast_r` is the reliability of one contrast;
     `averaged_r_spearman_brown` projects it to the k replicates actually
     averaged, as k*r / (1 + (k-1)*r), and is the value retrieval depends on.
     """
-    from itertools import permutations
-
     k = min(len(T), len(C))
     if k < 2:
         return None
+
+    n_full = k * k * (k - 1) * (k - 1) // 2
+    exhaustive = n_full <= max_pairings
+
+    if exhaustive:
+        pairings = ((ti, tj, ci, cj)
+                    for ti, tj in combinations(range(k), 2)
+                    for ci, cj in permutations(range(k), 2))
+    else:
+        rng = np.random.default_rng(seed)
+        seen = set()
+        while len(seen) < max_pairings:
+            ti, tj = rng.choice(k, 2, replace=False)
+            ci, cj = rng.choice(k, 2, replace=False)
+            seen.add((min(ti, tj), max(ti, tj), ci, cj))
+        pairings = seen
+
     rs = []
-    for perm in permutations(range(k), 2):
-        d = [T[i] - C[perm[i]] for i in range(2)]
-        pair = spearman(d[0], d[1])
+    for ti, tj, ci, cj in pairings:
+        pair = spearman(T[ti] - C[ci], T[tj] - C[cj])
         if np.isfinite(pair):
             rs.append(float(pair))
     if not rs:
         return None
+
     r1 = float(np.mean(rs))
     sb = k * r1 / (1 + (k - 1) * r1) if r1 > -1 / (k - 1) else float("nan")
     return {"single_contrast_r": r1, "n_pairings": len(rs),
-            "averaged_r_spearman_brown": sb, "k": k}
+            "averaged_r_spearman_brown": sb, "k": k,
+            "exhaustive": exhaustive}
 
 
 def describe_reliability(r: float) -> str:
