@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genetomol"
+version = "0.1.0"
+description = "GeneToMol -- find the compound behind a transcriptomic signature"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "torch>=2.1",
+    "rdkit>=2023.9",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+# Only `data.load_l1000` needs these; the smoke test and the model do not.
+l1000 = ["cmapPy>=1.0.6"]
+dev = ["pytest>=7.4"]
+# Only `plot` needs this; training writes JSON and draws nothing.
+plot = ["matplotlib>=3.7"]
+# Purely cosmetic; training runs identically without it.
+progress = ["tqdm>=4.60"]
+# Only `molembed` needs this, and only to build the cached .npz once.
+chem = ["transformers>=4.40"]
+# Chemical Checker bioactivity signatures, needed only to build the .npz once.
+# DECLARED FOR DOCUMENTATION -- do not install with `pip install -e .[bioactivity]`.
+# Extras are additive to `dependencies`, so that re-resolves numpy/torch/rdkit
+# over the hand-installed builds and walks into the OMP clash the README
+# describes; `--no-deps` cannot help, since it skips extras too.
+# Use `pip install signaturizer`. It also pulls TensorFlow, a second native
+# runtime beside torch, so a throwaway env is a reasonable place to build it.
+bioactivity = ["signaturizer>=1.1"]
+
+[project.scripts]
+genetomol-train = "genetomol.train:main"
+genetomol-plot = "genetomol.plot:main"
+genetomol-molembed = "genetomol.molembed:main"
+genetomol-ccsign = "genetomol.ccsign:main"
+genetomol-census = "genetomol.census:main"
+genetomol-download = "genetomol.download:main"
+genetomol-prepare = "genetomol.prepare:main"
+
+[tool.setuptools]
+packages = ["genetomol"]

@@ -1,0 +1,29 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Training output: checkpoints are hundreds of MB and are not what this repo
+# distributes. The web app reads serving_bundle.npz, which is committed.
+runs/
+
+# Prepared LINCS artifacts -- rebuild with perturb_retrieval.prepare
+prepared/
+*.gctx
+artifacts.npz
+ecfp*.npz
+cc_*.npz
+chemberta.npz
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

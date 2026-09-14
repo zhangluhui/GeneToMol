@@ -1,0 +1,10 @@
+# Normalize text in the repository, check out native line endings.
+* text=auto
+
+# Binary payloads -- never line-ending-converted. The bundle in particular is
+# a NumPy archive; a CRLF rewrite would corrupt it silently.
+*.npz binary
+*.npy binary
+*.pt  binary
+*.png binary
+*.gctx binary

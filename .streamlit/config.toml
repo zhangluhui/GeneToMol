@@ -1,0 +1,11 @@
+# Palette taken from docs/model_structure.png so the app and the figures read
+# as one piece: the shared-space green is the accent, the slate is body text.
+[theme]
+primaryColor = "#2E9E7E"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F6F8"
+textColor = "#22303C"
+font = "sans serif"
+
+[browser]
+gatherUsageStats = false

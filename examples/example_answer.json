@@ -1,0 +1,9 @@
+{
+  "compound_id": "BRD-K37890730",
+  "moa": "Topoisomerase inhibitor",
+  "target": "TOP1",
+  "smiles": "CC[C@@]1(O)C(=O)OCc2c1cc1-c3nc4ccccc4cc3Cn1c2=O",
+  "source_row": 12832,
+  "split": "test",
+  "replicates": 3
+}
