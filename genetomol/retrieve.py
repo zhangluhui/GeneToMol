@@ -166,7 +166,7 @@ def split_half_reliability(T: np.ndarray, C: np.ndarray) -> dict | None:
         return None
     rs = []
     for perm in permutations(range(k), 2):
-        d = [T[i] - C[perm[i]] for i in range(k)]
+        d = [T[i] - C[perm[i]] for i in range(2)]
         pair = spearman(d[0], d[1])
         if np.isfinite(pair):
             rs.append(float(pair))
